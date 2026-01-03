@@ -1,62 +1,17 @@
-"use client";
+import Link from "next/link";
 
-import { useEffect, useState } from "react";
-
-type Item = { _id: string; name: string; qty: number };
-
-export default function HomePage() {
-  const [items, setItems] = useState<Item[]>([]);
-  const [name, setName] = useState("");
-  const [qty, setQty] = useState(1);
-  const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-  async function fetchItems() {
-    try {
-      const res = await fetch(`${API}/items`);
-      const data = await res.json();
-      setItems(data);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      await fetch(`${API}/items`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, qty: Number(qty) }),
-      });
-      setName("");
-      setQty(1);
-      fetchItems();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
+export default function Home() {
   return (
-    <main style={{ padding: 20 }}>
-      <h1>AyeStock - Items</h1>
-
-      <form onSubmit={handleCreate} style={{ marginBottom: 20 }}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre" required />
-        <input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} min={0} required />
-        <button type="submit">Crear</button>
-      </form>
-
-      <ul>
-        {items.map((it) => (
-          <li key={it._id}>
-            {it.name} — {it.qty}
-          </li>
-        ))}
-      </ul>
+    <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 className="text-5xl font-bold mb-8 text-center text-gray-800">Welcome to AyeStock</h1>
+        <nav className="flex flex-col gap-4">
+          <Link href="/" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center transition-colors duration-300">Home</Link>
+          <Link href="/create" className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-center transition-colors duration-300">Create</Link>
+          <Link href="/items" className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-center transition-colors duration-300">Items</Link>
+        </nav>
+        <p className="mt-8 text-gray-500 text-center">Select a page to get started.</p>
+      </div>
     </main>
   );
 }

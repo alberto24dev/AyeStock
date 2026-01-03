@@ -30,7 +30,12 @@ app.add_middleware(
 
 class Item(BaseModel):
     name: str
-    qty: int
+    quantity: int
+    price: float
+    cost: float
+    category: str
+    description: str
+    active: bool
 
 # util para convertir ObjectId
 def fix_id(doc):
@@ -46,6 +51,14 @@ async def create_item(item: Item):
 @app.get("/items")
 async def list_items():
     cursor = db.items.find()
+    items = []
+    async for doc in cursor:
+        items.append(fix_id(doc))
+    return items
+
+@app.get("/items/search")
+async def search_items(query: str):
+    cursor = db.items.find({"name": {"$regex": query, "$options": "i"}})
     items = []
     async for doc in cursor:
         items.append(fix_id(doc))
